@@ -8,7 +8,7 @@ Created on Mon Jul 23 14:17:14 2018
 
 from flask import Flask
 from flask_restful import Resource,Api, reqparse
-import requests,json
+import requests,json, subprocess, datetime
 
 app = Flask(__name__)
 api = Api(app)
@@ -36,12 +36,19 @@ class main():
 if __name__ == "__main__":
     Git = main()
     app.run(port = 8080)
-        
-        
-    
-    
-    
 
-            
-            
+
+###### for total commits and converting unix date time
+op = subprocess.check_output([
+    "curl", "-H", "Accept: application/vnd.github.cloak-preview", "https://api.github.com/search/commits?q=author:vimanyuK"], shell=False)
+op = op.decode('utf-8')
+info = json.loads(op)
+    
+print(
+    datetime.datetime.fromtimestamp(
+        int("1531612800")
+    ).strftime('%Y-%m-%d %H:%M:%S')
+)
+    
+                
             
