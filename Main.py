@@ -56,3 +56,36 @@ print(
         int("1531612800")
     ).strftime('%Y-%m-%d %H:%M:%S')
 )
+
+############################################################################################
+"""Total number of commit contributions as above, but restricted to projects that are members of the original submitted set."""
+############################################################################################
+commit_list = []
+commit_count = 0
+page_number = 1
+pages = True
+while (pages):
+    link = requests.get("https://api.github.com/repos/danielfrg/word2vec/commits?page={}&per_page=100".format(page_number), auth=('vimanyuK', 'Pixel2017*('))
+    json_data = json.loads(link.text)
+    print(pages)
+    if (len(json_data) == 0):
+        break
+    for i in json_data:
+        commit_list.append(i['sha'])
+        print("Commit Sha: {}".format(i['sha']))
+    
+    if (len(json_data) == 0):  
+        print("End")
+        pages = False
+        break
+    else:
+#       print(link.headers.get('link'))
+        print("new")
+        page_number = page_number + 1 
+
+    
+json_data[0]['committer']['login'] == git_username[0]
+
+
+
+
