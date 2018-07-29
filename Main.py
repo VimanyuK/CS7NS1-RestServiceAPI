@@ -19,6 +19,10 @@ class main():
         self.number_of_users = int(input ('Enter the number username/repos you want to enter: '))
         self.git_username = []
         self.git_repo = []
+        self.commit_list = []
+        self.commit_count = 0
+        self.page_number = 1
+        self.pages = True
         
         while(self.number_of_users != 0):
             self.user_name = input('Enter the user name: ')
@@ -31,8 +35,11 @@ class main():
         for n in range(0,len(self.git_username)):
             user = requests.get('https://api.github.com/repos/'+ self.git_username[n] +'/' + self.git_repo[n] + '/commits')
             self.git_data['{0}'.format(self.git_username[n])] = json.loads(user.text)
-#            print(self.git_data)
-    
+
+        ############################################################################################
+        """Total number of commit contributions to any project to which a user has a contributed."""
+        ############################################################################################
+    def ranking1(self):
         self.git_commit_count = {}
         for i in range(0,len(self.git_username)):
             git_user_data = {}
@@ -45,47 +52,36 @@ class main():
         print(self.git_commit_count)
 
 
+        ############################################################################################
+        """Total number of commit contributions as above, but restricted to projects that are 
+        members of the original submitted set."""
+        ############################################################################################
+    def ranking2(self):
+                
+        for j in range(0,len(self.git_username)):
+            self.commit_list = []
+            self.page_number = 1
+            self.pages = True
+            while (self.pages):
+                link = requests.get("https://api.github.com/repos/"+self.git_username[j]+"/"+self.git_repo[j]+"/commits?page={}&per_page=100".format(self.page_number), auth=('username', 'password'))
+                json_data = json.loads(link.text)
+            
+                if (len(json_data) == 0):
+                    self.pages = False
+                    break
+                
+                for i in json_data:
+                    
+                    if(i['author'] is not None and i['author']['login'] == self.git_username[j]):
+                        self.commit_list.append(i['sha'])
+                    else:
+                        continue
+                else:
+                    self.page_number = self.page_number + 1
+                print( "commits by: ",self.git_username[j], len(self.commit_list) )
+
 if __name__ == "__main__":
     Git = main()
+    Git.ranking2()
     app.run(port = 8080)
-
-
-###### for converting unix timestamp
-print(
-    datetime.datetime.fromtimestamp(
-        int("1531612800")
-    ).strftime('%Y-%m-%d %H:%M:%S')
-)
-
-############################################################################################
-"""Total number of commit contributions as above, but restricted to projects that are members of the original submitted set."""
-############################################################################################
-commit_list = []
-commit_count = 0
-page_number = 1
-pages = True
-while (pages):
-    link = requests.get("https://api.github.com/repos/danielfrg/word2vec/commits?page={}&per_page=100".format(page_number), auth=('vimanyuK', 'Pixel2017*('))
-    json_data = json.loads(link.text)
-    print(pages)
-    if (len(json_data) == 0):
-        break
-    for i in json_data:
-        commit_list.append(i['sha'])
-        print("Commit Sha: {}".format(i['sha']))
-    
-    if (len(json_data) == 0):  
-        print("End")
-        pages = False
-        break
-    else:
-#       print(link.headers.get('link'))
-        print("new")
-        page_number = page_number + 1 
-
-    
-json_data[0]['committer']['login'] == git_username[0]
-
-
-
 
