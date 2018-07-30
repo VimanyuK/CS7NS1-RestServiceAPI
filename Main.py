@@ -79,9 +79,30 @@ class main():
                 else:
                     self.page_number = self.page_number + 1
                 print( "commits by: ",self.git_username[j], len(self.commit_list) )
+        ############################################################################################
+        """ The number of known programming languages for each user (presuming that the languages of
+        any repository committed to are known to the user) """
+        ############################################################################################   
+    def ranking3(self):
+        for j in range(0,len(self.git_username)):
+            link = requests.get("https://api.github.com/users/"+self.git_username[j]+"/repos", auth=('vimanyuK', 'Pixel2018*('))
+            json_data = json.loads(link.text)
+            results = nested_lookup(key = 'full_name', document = json_data, wild = True, with_keys = False)
+          
+            self.git_language = {}
+            new = []
+            for l in range(0,len(results)):
+                link = requests.get("https://api.github.com/repos/"+results[l]+"/languages", auth=('vimanyuK', 'Pixel2018*('))
+                language_data = json.loads(link.text)
+                for x in range(0,len(language_data)):
+                    new.append(list(language_data)[x])
+
+                self.git_language['{0}'.format(self.git_username[j])] = list(set(new))
+            print(self.git_language)
+        
 
 if __name__ == "__main__":
     Git = main()
-    Git.ranking2()
+    Git.ranking3()
     app.run(port = 8080)
 
