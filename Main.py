@@ -100,9 +100,35 @@ class main():
                 self.git_language['{0}'.format(self.git_username[j])] = list(set(new))
             print(self.git_language)
         
-
+        
+        ############################################################################################
+        """ The weekly commit rate of users (provide a weekly rank ordering) for the submitted project set, 
+        for 2018."""
+        ############################################################################################   
+    def ranking4(self):
+        
+        for j in range(0,len(self.git_username)):
+            link = requests.get("https://api.github.com/repos/"+self.git_username[j]+"/"+self.git_repo[j]+"/stats/commit_activity", auth=('vimanyuK', 'Pixel2018*('))
+            json_data = json.loads(link.text)
+            self.git_commit_rate = {}
+            self.counter = []   
+            
+            for i in json_data:
+                if ( i['total'] != 0 and ('2018' in (datetime.datetime.fromtimestamp(int(i['week'])).strftime('%Y-%m-%d %H:%M:%S'))) ):
+#                print(type(i['total']))
+#                if (i[1] !=0):
+                    self.counter.extend([datetime.datetime.fromtimestamp(int(i['week'])).strftime('%Y-%m-%d %H:%M:%S'), i['total']])
+                else:
+                    continue        
+            
+            self.git_commit_rate['{0}'.format(self.git_username[j])] = self.counter
+            print(self.git_commit_rate)
+            
 if __name__ == "__main__":
     Git = main()
-    Git.ranking3()
+    Git.ranking4()
     app.run(port = 8080)
 
+
+# vimanyuk cs7ns1-restserviceapi
+# danielfrg word2vec
