@@ -124,41 +124,35 @@ class main():
             self.git_commit_rate['{0}'.format(self.git_username[j])] = self.counter
             print(self.git_commit_rate)
             
+
+    ############################################################################################
+    """  5. The average commit rate of each user to any project, for 2018."""
+    ############################################################################################           
+    def ranking5(self):
+        self.avg_commits = {}
+        for k in self.git_username:
+            counter = 0
+            commits = 0
+            link = requests.get("https://api.github.com/users/"+k+"/repos?per_page=100", auth=('vimanyuK', 'Pixel2018*('))
+            json_data = json.loads(link.text)
+            results = nested_lookup(key = 'name', document = json_data, wild = False, with_keys = False)
+            
+            for r in results:
+                link = requests.get("https://api.github.com/repos/"+k+"/"+r+"/commits?since=2018-01-01", auth=('vimanyuK', 'Pixel2018*('))
+                json_data = json.loads(link.text)
+                if (len(json_data) != 0):
+                    counter += 1
+                    commits = len(json_data) + commits
+                else:
+                    continue
+            
+            self.avg_commits['{0}'.format(k)] = (commits/counter)
+        print(self.avg_commits)
+
 if __name__ == "__main__":
     Git = main()
-    Git.ranking3()
+    Git.ranking5()
     app.run(port = 8080)
-
-
-
-############################################################################################
-"""  5. The average commit rate of each user to any project, for 2018."""
-############################################################################################           
-
-avg_cmt = {}
-username = ['vimanyuk','hanutm']
-for k in username:
-    
-    link = requests.get("https://api.github.com/users/"+k+"/repos?per_page=100", auth=('vimanyuK', 'Pixel2018*('))
-    json_data = json.loads(link.text)
-    results = nested_lookup(key = 'name', document = json_data, wild = False, with_keys = False)
-    count = 0.0
-    counter = 0
-    
-    for i in results:
-        link = requests.get("https://api.github.com/repos/"+k+"/"+i+"/"+"stats/commit_activity", auth=('vimanyuK', 'Pixel2018*('))
-        data = json.loads(link.text)
-        
-        for j in data:
-            if (j['total'] != 0 and ('2018' in (datetime.datetime.fromtimestamp(int(j['week'])).strftime('%Y-%m-%d %H:%M:%S'))) ):
-                 count = j['total'] + count
-                 print(k,i,datetime.datetime.fromtimestamp(int(j['week'])).strftime('%Y-%m-%d %H:%M:%S'), " = ", j['total'])
-            else:
-                continue
-        avg_cmt['{0}'.format(k)] = (count/(len(results)))
-
-
-
 
 
 
