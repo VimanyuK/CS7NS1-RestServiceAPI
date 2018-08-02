@@ -149,9 +149,38 @@ class main():
             self.avg_commits['{0}'.format(k)] = (commits/counter)
         print(self.avg_commits)
 
+
+    ############################################################################################
+    """ 6. The total number of collaborators in 2018 (ie. a count of other users who have 
+    contributed to any project that the user has contributed to)."""
+    ############################################################################################         
+    def ranking6(self):
+        self.contributors = {}
+        for k in self.git_username:
+            count = 0
+            offset = 0
+            link = requests.get("https://api.github.com/users/"+k+"/repos?per_page=100", auth=('vimanyuK', 'Pixel2018*('))
+            json_data = json.loads(link.text)
+            results = nested_lookup(key = 'name', document = json_data, wild = False, with_keys = False)
+        
+            for r in results:
+                link = requests.get("https://api.github.com/repos/"+k+"/"+r+"/commits?since=2018-01-01", auth=('vimanyuK', 'Pixel2018*('))
+                ddata = json.loads(link.text)
+            
+                if (len(ddata) != 0):
+                    offset = offset + 1
+                    link = requests.get("https://api.github.com/repos/"+k+"/"+r+"/contributors", auth=('vimanyuK', 'Pixel2018*('))
+                    data = json.loads(link.text)
+                    count = count + len(data)
+                else:
+                    continue
+            self.contributors['{0}'.format(k)] = (count - offset)
+            print(self.contributors)
+
+
 if __name__ == "__main__":
     Git = main()
-    Git.ranking5()
+    Git.ranking6()
     app.run(port = 8080)
 
 
