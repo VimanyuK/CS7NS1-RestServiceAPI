@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<a href="/to_add" class="button">Add new users</a>&nbsp;&nbsp;
+<a href="/to_update" class="button">Update users</a>&nbsp;&nbsp;
+<a href="/to_delete" class="button">Delete users</a>&nbsp;&nbsp;
+<h1 align = "center"><u> GitHub User Info </u></h1>
+
+  <body>
+    <table align = "center">
+	     <tr>
+		       <th>Git usernames</th>
+		       <th>Repository names</th>
+	     </tr>
+	      {% for k, v in dat.items() %}
+		      <tr>
+			         <td>{{ k }}</td>
+			         <td>{{ v }}</td>
+		      </tr>
+	      {% endfor %}
+    </table>
+
+  </body>
+
+</html>
