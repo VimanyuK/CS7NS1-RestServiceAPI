@@ -1,0 +1,17 @@
+<html>
+<body>
+  <a href="/" class="button">Home</a>&nbsp;&nbsp;
+  <p> <center>2. Total number of commit contributions as criteria 1, but restricted to projects that are members of the original submitted set.</center> </p>
+  <table align = 'center'>
+      {% for key, value in result.items() %}
+
+         <tr>
+            <th> {{ key }} </th>
+            <td> {{ value }} </td>
+         </tr>
+
+      {% endfor %}
+   </table>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<html>
+<body>
+  <a href="/" class="button">Home</a>&nbsp;&nbsp;
+  <p> <center>1. Total number of commit contributions to any project to which a user has a contributed in 2018.</center> </p>
+  <table align = 'center'>
+      {% for key, value in result.items() %}
+
+         <tr>
+            <th> {{ key }} </th>
+            <td> {{ value }} </td>
+         </tr>
+
+      {% endfor %}
+   </table>
+
+</body>
+</html>

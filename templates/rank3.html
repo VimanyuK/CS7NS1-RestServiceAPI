@@ -1,0 +1,17 @@
+<html>
+<body>
+  <a href="/" class="button">Home</a>&nbsp;&nbsp;
+  <p> <center>3. The number of known programming languages for each user (presuming that the languages of any repository committed to are known to the user)</center> </p>
+  <table align = 'center'>
+      {% for key, value in result.items() %}
+
+         <tr>
+            <th> {{ key }} </th>
+            <td> {{ value }} </td>
+         </tr>
+
+      {% endfor %}
+   </table>
+
+</body>
+</html>

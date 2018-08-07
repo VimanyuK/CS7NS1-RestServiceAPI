@@ -1,0 +1,17 @@
+<html>
+<body>
+  <a href="/" class="button">Home</a>&nbsp;&nbsp;
+  <p> <center>4. The weekly commit rate of users (provide a weekly rank ordering) for the submitted project set, for 2018.</center> </p>
+  <table align = 'center'>
+      {% for key, value in result.items() %}
+
+         <tr>
+            <th> {{ key }} </th>
+            <td> {{ value }} </td>
+         </tr>
+
+      {% endfor %}
+   </table>
+
+</body>
+</html>

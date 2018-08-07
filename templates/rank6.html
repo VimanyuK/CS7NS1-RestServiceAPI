@@ -1,0 +1,17 @@
+<html>
+<body>
+  <a href="/" class="button">Home</a>&nbsp;&nbsp;
+  <p> <center> 6. The total number of collaborators in 2018 (ie. a count of other users who have contributed to any project that the user has contributed to).</center> </p>
+  <table align = 'center'>
+      {% for key, value in result.items() %}
+
+         <tr>
+            <th> {{ key }} </th>
+            <td> {{ value }} </td>
+         </tr>
+
+      {% endfor %}
+   </table>
+
+</body>
+</html>
