@@ -11,12 +11,15 @@ from flask_restful import Resource
 import requests, json, subprocess, datetime
 from nested_lookup import nested_lookup
 
+import smtplib
+from smtplib import SMTPException
+
 import os
 path = '/home/vimanyu/Documents/flask'
 os.chdir(path)
 app = Flask(__name__)
 
-"""Enter username and password use the git hub api"""
+"""Github account username and password to use the api for testing purposes, can # NOTE: ping more than the limit without credentials."""
 Username = "cs7ns1"
 Password = "Datascience2018*("
 
@@ -26,6 +29,7 @@ class main():
         self.git_username = []
         self.git_repo = []
         self.git_users = {}
+        self.git_mail = {}
 
         while(self.number_of_users != 0):
             self.user_name = input('Enter the user name: ')
@@ -38,7 +42,6 @@ class main():
 
 @app.route("/")
 def GitUsers():
-    print(M.git_username, M.git_repo)
     return render_template("welcome.html", dat = M.git_users)
 
 
@@ -89,7 +92,6 @@ def GitUpdate():
                 M.git_users.update({key[0]:value[0]})
                 M.git_username.append(key[0])
                 M.git_repo.append(value[0])
-    print(M.git_username,M.git_repo)
     return render_template("update.html",result = result)
 
 
@@ -104,20 +106,21 @@ def GitRank1():
         results = list(set(results))
         results = [x for x in results if ("2018" in x)]
         git_commit_count['{0}'.format(M.git_username[i])] = len(results)
+        M.git_mail.update(git_commit_count)
 
     return render_template("rank1.html", result = git_commit_count)
 
 
 @app.route('/rank2')
 def GitRank2():
-    git_commit_count = {}
+    git_commit_count2 = {}
     for j in range(0,len(M.git_username)):
         link = requests.get("https://api.github.com/repos/"+M.git_username[j]+"/"+M.git_repo[j]+"/commits?since=2018-01-01", auth=(Username, Password))
         data = json.loads(link.text)
         user_repo = M.git_username[j]+'/'+M.git_repo[j]
-        git_commit_count['{0}'.format(user_repo)] = len(data)
-
-    return render_template("rank2.html", result = git_commit_count )
+        git_commit_count2['{0}'.format(user_repo)] = len(data)
+        M.git_mail.update(git_commit_count2)
+    return render_template("rank2.html", result = git_commit_count2 )
 
 
 @app.route('/rank3')
@@ -136,7 +139,7 @@ def GitRank3():
                 new.append(list(language_data)[x])
 
             git_language['{0}'.format(M.git_username[j])] = list(set(new))
-
+    M.git_mail.update(git_language)
     return render_template("rank3.html", result = git_language )
 
 
@@ -155,6 +158,7 @@ def GitRank4():
                 continue
         user_repo = M.git_username[j]+'/'+M.git_repo[j]
         git_commit_rate['{0}'.format(user_repo)] = counter
+        M.git_mail.update(git_commit_rate)
     return render_template("rank4.html", result = git_commit_rate )
 
 
@@ -178,6 +182,7 @@ def GitRank5():
                 continue
 
         avg_commits['{0}'.format(k)] = (commits/counter)
+        M.git_mail.update(avg_commits)
     return render_template("rank5.html", result = avg_commits  )
 
 
@@ -202,7 +207,43 @@ def GitRank6():
             else:
                 continue
         contributors['{0}'.format(k)] = (count - offset)
+        M.git_mail.update(contributors)
     return render_template("rank6.html", result = contributors)
+
+
+@app.route('/to_mail')
+def Gittomail():
+    return render_template("to_mail.html")
+
+@app.route('/mail', methods = ['POST','GET'])
+def Gitmail():
+    if request.method == 'POST':
+        result = request.form
+        sender = request.form.getlist('fromemailID')
+        password = request.form.getlist('password')
+        reciever = request.form.getlist('toemailId')
+
+        msg = "\n"+str(M.git_mail)
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        while True:
+            try:
+                server.login(sender[0], password[0])
+            except:
+                print("Error: Bad credentials")
+                result = "Error: Bad credentials"
+                break
+            try:
+                server.sendmail(sender[0], reciever[0], msg)
+                print('Mail sent')
+                result = "Mail sent"
+                break
+            except SMTPException:
+                print ("Error: unable to send email")
+                result = "Error: unable to send email"
+                break
+
+    return render_template("mail.html", result = result)
 
 if __name__ == "__main__":
     M = main()
