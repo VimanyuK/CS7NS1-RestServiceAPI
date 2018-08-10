@@ -19,7 +19,7 @@ path = '/home/vimanyu/Documents/flask'
 os.chdir(path)
 app = Flask(__name__)
 
-"""Github account username and password to use the api for testing purposes, can # NOTE: ping more than the limit without credentials."""
+"""Github account username and password to use the api for testing purposes, can not ping more than the set limit without credentials."""
 Username = "cs7ns1"
 Password = "Datascience2018*("
 
