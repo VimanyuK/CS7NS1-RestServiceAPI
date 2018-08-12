@@ -19,7 +19,7 @@ path = '/home/vimanyu/Documents/flask'
 os.chdir(path)
 app = Flask(__name__)
 
-"""Github account username and password to use the api for testing purposes, can # NOTE: ping more than the limit without credentials."""
+"""Github account username and password to use the api for testing purposes, can not ping more than the limit without credentials."""
 Username = "cs7ns1"
 Password = "Datascience2018*("
 
@@ -106,9 +106,10 @@ def GitRank1():
         results = list(set(results))
         results = [x for x in results if ("2018" in x)]
         git_commit_count['{0}'.format(M.git_username[i])] = len(results)
-        M.git_mail.update(git_commit_count)
 
-    return render_template("rank1.html", result = git_commit_count)
+    od = dict(sorted(git_commit_count.items(),key = lambda x:x[1], reverse=True))
+    M.git_mail.update(od)
+    return render_template("rank1.html", result = od)
 
 
 @app.route('/rank2')
@@ -119,8 +120,10 @@ def GitRank2():
         data = json.loads(link.text)
         user_repo = M.git_username[j]+'/'+M.git_repo[j]
         git_commit_count2['{0}'.format(user_repo)] = len(data)
-        M.git_mail.update(git_commit_count2)
-    return render_template("rank2.html", result = git_commit_count2 )
+
+    od = dict(sorted(git_commit_count2.items(),key = lambda x:x[1], reverse=True))
+    M.git_mail.update(od)
+    return render_template("rank2.html", result = od )
 
 
 @app.route('/rank3')
@@ -131,16 +134,18 @@ def GitRank3():
         json_data = json.loads(link.text)
         results = nested_lookup(key = 'full_name', document = json_data, wild = True, with_keys = False)
 
+        lang_count = {}
         new = []
         for l in range(0,len(results)):
             link = requests.get("https://api.github.com/repos/"+results[l]+"/languages", auth=(Username, Password))
             language_data = json.loads(link.text)
             for x in range(0,len(language_data)):
                 new.append(list(language_data)[x])
-
             git_language['{0}'.format(M.git_username[j])] = list(set(new))
-    M.git_mail.update(git_language)
-    return render_template("rank3.html", result = git_language )
+
+    od = dict(sorted(git_language.items(),key = lambda x:len(x[1]), reverse=True))
+    M.git_mail.update(od)
+    return render_template("rank3.html", result = od )
 
 
 @app.route('/rank4')
@@ -158,8 +163,9 @@ def GitRank4():
                 continue
         user_repo = M.git_username[j]+'/'+M.git_repo[j]
         git_commit_rate['{0}'.format(user_repo)] = counter
-        M.git_mail.update(git_commit_rate)
-    return render_template("rank4.html", result = git_commit_rate )
+    od = dict(sorted(git_commit_rate.items(),key = lambda x:len(x[1]), reverse=True))
+    
+    return render_template("rank4.html", result = od )
 
 
 @app.route('/rank5')
@@ -182,8 +188,9 @@ def GitRank5():
                 continue
 
         avg_commits['{0}'.format(k)] = (commits/counter)
-        M.git_mail.update(avg_commits)
-    return render_template("rank5.html", result = avg_commits  )
+    od = dict(sorted(avg_commits.items(),key = lambda x:x[1], reverse=True))
+    M.git_mail.update(od)
+    return render_template("rank5.html", result = od)
 
 
 @app.route('/rank6')
@@ -207,8 +214,10 @@ def GitRank6():
             else:
                 continue
         contributors['{0}'.format(k)] = (count - offset)
-        M.git_mail.update(contributors)
-    return render_template("rank6.html", result = contributors)
+
+    od = dict(sorted(contributors.items(),key = lambda x:x[1], reverse=True))
+    M.git_mail.update(od)
+    return render_template("rank6.html", result = od)
 
 
 @app.route('/to_mail')
@@ -250,3 +259,7 @@ if __name__ == "__main__":
     app.run(port =8080)
 
 #YuzhouPeng/CS7IS5-Adaptive-Application
+#vimanyuk/DataVis_InteractiveBubbleChart
+#hanutm/Visualization
+#ShrubinS/swim-protocol
+#dr-costas/mad-twinnet
