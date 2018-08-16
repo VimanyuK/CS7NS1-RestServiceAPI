@@ -15,7 +15,7 @@ import smtplib
 from smtplib import SMTPException
 
 import os
-path = '/home/vimanyu/Documents/flask'
+path = '.'
 os.chdir(path)
 app = Flask(__name__)
 
