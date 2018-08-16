@@ -19,11 +19,9 @@ path = '/home/vimanyu/Documents/flask'
 os.chdir(path)
 app = Flask(__name__)
 
-<<<<<<< HEAD
-"""Github account username and password to use the api for testing purposes, can not ping more than the limit without credentials."""
-=======
+
 """Github account username and password to use the api for testing purposes, can not ping more than the set limit without credentials."""
->>>>>>> b8b420c974b3ee09dbccf9aafd5cea426d89ef27
+
 Username = "cs7ns1"
 Password = "Datascience2018*("
 
@@ -266,7 +264,3 @@ if __name__ == "__main__":
 #vimanyuk/DataVis_InteractiveBubbleChart
 #hanutm/Visualization
 #ShrubinS/swim-protocol
-<<<<<<< HEAD
-#dr-costas/mad-twinnet
-=======
->>>>>>> b8b420c974b3ee09dbccf9aafd5cea426d89ef27
