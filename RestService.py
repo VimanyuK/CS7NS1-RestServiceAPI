@@ -19,9 +19,7 @@ path = '.'
 os.chdir(path)
 app = Flask(__name__)
 
-
-"""Github account username and password to use the api for testing purposes, can not ping more than the set limit without credentials."""
-
+"""Github account username and password to use the api for testing purposes, can not ping more than the limit without credentials."""
 Username = "cs7ns1"
 Password = "Datascience2018*("
 
@@ -100,17 +98,22 @@ def GitUpdate():
 @app.route('/rank1')
 def GitRank1():
     git_commit_count = {}
-    for i in range(0,len(M.git_username)):
-        git_user_data = {}
-        temp = subprocess.check_output(["curl", "-H", "Accept: application/vnd.github.cloak-preview", "https://api.github.com/search/commits?q=author:"+M.git_username[i]+"&per_page=100"],shell=False).decode('utf-8')
-        git_user_data['{0}'.format(M.git_username[i])] = json.loads(temp)
-        results = nested_lookup(key = 'date', document = git_user_data, wild = True, with_keys = False)
-        results = list(set(results))
-        results = [x for x in results if ("2018" in x)]
-        git_commit_count['{0}'.format(M.git_username[i])] = len(results)
+    for u in M.git_username:
+        commits = 0
+        link = requests.get("https://api.github.com/users/"+u+"/repos?per_page=100", auth=(Username, Password))
+        json_data = json.loads(link.text)
+        results = nested_lookup(key = 'name', document = json_data, wild = False, with_keys = False)
 
-    od = dict(sorted(git_commit_count.items(),key = lambda x:x[1], reverse=True))
-    M.git_mail.update(od)
+        for r in results:
+            link = requests.get("https://api.github.com/repos/"+u+"/"+r+"/commits?since=2018-01-01", auth=(Username, Password))
+            json_data = json.loads(link.text)
+            if (len(json_data) != 0):
+                commits = len(json_data) + commits
+            else:
+                continue
+        git_commit_count['{0}'.format('Criterion_1 '+u)] = (commits)
+        od = dict(sorted(git_commit_count.items(),key = lambda x:x[1], reverse=True))
+        M.git_mail.update(od)
     return render_template("rank1.html", result = od)
 
 
@@ -120,7 +123,7 @@ def GitRank2():
     for j in range(0,len(M.git_username)):
         link = requests.get("https://api.github.com/repos/"+M.git_username[j]+"/"+M.git_repo[j]+"/commits?since=2018-01-01", auth=(Username, Password))
         data = json.loads(link.text)
-        user_repo = M.git_username[j]+'/'+M.git_repo[j]
+        user_repo = 'Criterion_2 '+M.git_username[j]+'/'+M.git_repo[j]
         git_commit_count2['{0}'.format(user_repo)] = len(data)
 
     od = dict(sorted(git_commit_count2.items(),key = lambda x:x[1], reverse=True))
@@ -143,7 +146,7 @@ def GitRank3():
             language_data = json.loads(link.text)
             for x in range(0,len(language_data)):
                 new.append(list(language_data)[x])
-            git_language['{0}'.format(M.git_username[j])] = list(set(new))
+            git_language['{0}'.format('Criterion_3 '+M.git_username[j])] = list(set(new))
 
     od = dict(sorted(git_language.items(),key = lambda x:len(x[1]), reverse=True))
     M.git_mail.update(od)
@@ -163,10 +166,10 @@ def GitRank4():
                 counter.extend([datetime.datetime.fromtimestamp(int(i['week'])).strftime('%Y-%m-%d %H:%M:%S'), i['total']])
             else:
                 continue
-        user_repo = M.git_username[j]+'/'+M.git_repo[j]
+        user_repo = 'commit rate for: '+M.git_username[j]+'/'+M.git_repo[j]
         git_commit_rate['{0}'.format(user_repo)] = counter
     od = dict(sorted(git_commit_rate.items(),key = lambda x:len(x[1]), reverse=True))
-    
+
     return render_template("rank4.html", result = od )
 
 
@@ -189,7 +192,7 @@ def GitRank5():
             else:
                 continue
 
-        avg_commits['{0}'.format(k)] = (commits/counter)
+        avg_commits['{0}'.format('Criterion_5 '+k)] = (commits/counter)
     od = dict(sorted(avg_commits.items(),key = lambda x:x[1], reverse=True))
     M.git_mail.update(od)
     return render_template("rank5.html", result = od)
@@ -215,7 +218,7 @@ def GitRank6():
                 count = count + len(data)
             else:
                 continue
-        contributors['{0}'.format(k)] = (count - offset)
+        contributors['{0}'.format('Criteria_6 '+k)] = (count - offset)
 
     od = dict(sorted(contributors.items(),key = lambda x:x[1], reverse=True))
     M.git_mail.update(od)
